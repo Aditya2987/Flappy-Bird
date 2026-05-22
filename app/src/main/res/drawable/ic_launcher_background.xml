@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/apk/res-auto"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    
+    <!-- Background Gradient Lavender / Pastel Purple -->
+    <path android:pathData="M0,0h108v108h-108z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:type="linear"
+                android:startX="54"
+                android:startY="0"
+                android:endX="54"
+                android:endY="108"
+                android:startColor="#D0BCFF"
+                android:endColor="#EADDFF" />
+        </aapt:attr>
+    </path>
+        
+    <!-- Retro Lavender Grid Lines -->
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M9,0L9,108 M19,0L19,108 M29,0L29,108 M39,0L39,108 M49,0L49,108 M59,0L59,108 M69,0L69,108 M79,0L79,108 M89,0L89,108 M99,0L99,108"
+        android:strokeWidth="1.0"
+        android:strokeColor="#2421005D" />
+        
+    <path
+        android:fillColor="#00000000"
+        android:pathData="M0,9L108,9 M0,19L108,19 M0,29L108,29 M0,39L108,39 M0,49L108,49 M0,59L108,59 M0,69L108,69 M0,79L108,79 M0,89L108,89 M0,99L108,99"
+        android:strokeWidth="1.0"
+        android:strokeColor="#2421005D" />
+
+    <!-- Cute Retro pixel clouds in the background -->
+    <path
+        android:fillColor="#44FFFFFF"
+        android:pathData="M 15,25 Q 20,18 27,22 Q 32,15 40,20 Q 45,25 40,30 L 15,30 Z" />
+    <path
+        android:fillColor="#44FFFFFF"
+        android:pathData="M 70,75 Q 73,70 78,72 Q 82,67 87,70 Q 90,75 86,79 L 70,79 Z" />
+</vector>

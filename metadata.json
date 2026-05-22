@@ -1,0 +1,6 @@
+{
+  "name": "Flappy Bird",
+  "description": "An elegant, high-performance Flappy Bird game featuring responsive custom gameplay, rich theme choices, particle effects, and high score persistence using a local Room database.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
