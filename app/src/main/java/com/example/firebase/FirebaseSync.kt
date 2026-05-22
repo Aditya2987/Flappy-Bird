@@ -56,6 +56,8 @@ object FirebaseSync {
                 .setApiKey(apiKey)
                 .setProjectId(projectId)
                 .setApplicationId(appId)
+                .setGcmSenderId("747742335472")
+                .setStorageBucket("flappy-bird-7ba9e.firebasestorage.app")
                 .build()
 
             // Safe double init guard just in case GMS or another system initialized it

@@ -1309,8 +1309,6 @@ fun LeaderboardOverlay(
     onClose: () -> Unit,
     onClearAll: () -> Unit
 ) {
-    var confirmClearDialog by remember { mutableStateOf(false) }
-
     val isArtistic = currentTheme == SkinTheme.ARTISTIC
     val containerBg = if (isArtistic) Color(0xFFEADDFF) else Color(0xFF15191C)
     val borderStrokeColor = if (isArtistic) Color(0xFF21005D) else Color.White.copy(alpha = 0.15f)
@@ -1318,21 +1316,18 @@ fun LeaderboardOverlay(
     val textTitleColor = if (isArtistic) Color(0xFF21005D) else Color.White
     val textSubColor = if (isArtistic) Color(0xFF21005D).copy(alpha = 0.6f) else Color.White.copy(alpha = 0.4f)
     val cellBg = if (isArtistic) Color(0xFFDECAFF) else Color.White.copy(alpha = 0.05f)
-    val trashColor = if (isArtistic) Color(0xFF21005D) else Color.Red.copy(alpha = 0.8f)
     val closeColor = if (isArtistic) Color(0xFF21005D) else Color.White
     val textDefaultColor = if (isArtistic) Color(0xFF21005D) else Color.White
 
     // Firebase Integration States
     val isFirebaseConfigured = FirebaseSync.isConnected()
-    var isGlobalSelected by remember { mutableStateOf(isFirebaseConfigured) }
-
     val onlineScores by FirebaseSync.onlineScores.collectAsStateWithLifecycle()
     val isSyncing by FirebaseSync.isSyncing.collectAsStateWithLifecycle()
     val connectionMessage by FirebaseSync.connectionStatusMessage.collectAsStateWithLifecycle()
 
     // Trigger score fetch on load
-    LaunchedEffect(isGlobalSelected) {
-        if (isGlobalSelected && isFirebaseConfigured) {
+    LaunchedEffect(Unit) {
+        if (isFirebaseConfigured) {
             FirebaseSync.fetchLeaderboard()
         }
     }
@@ -1375,100 +1370,21 @@ fun LeaderboardOverlay(
                         )
                         Spacer(modifier = Modifier.width(10.dp))
                         Text(
-                            text = "HALL OF FAME",
+                            text = "GLOBAL HALL OF FAME",
                             color = textTitleColor,
-                            fontSize = 22.sp,
+                            fontSize = 20.sp,
                             fontWeight = FontWeight.Black
                         )
                     }
 
-                    Row {
-                        IconButton(onClick = { confirmClearDialog = true }) {
-                            Icon(
-                                imageVector = Icons.Default.Delete,
-                                contentDescription = "Erase Data",
-                                tint = trashColor
-                            )
-                        }
-                        IconButton(onClick = onClose) {
-                            Icon(imageVector = Icons.Default.Close, contentDescription = "Close overlay", tint = closeColor)
-                        }
+                    IconButton(onClick = onClose) {
+                        Icon(imageVector = Icons.Default.Close, contentDescription = "Close overlay", tint = closeColor)
                     }
                 }
 
                 Spacer(modifier = Modifier.height(14.dp))
 
-                // Modern Tab selector (Local Offline vs Global Firebase)
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(12.dp))
-                        .background(if (isArtistic) Color(0xFFE8DDFF) else Color.White.copy(alpha = 0.04f))
-                        .then(if (isArtistic) Modifier.border(2.dp, Color(0xFF21005D), RoundedCornerShape(12.dp)) else Modifier)
-                        .padding(4.dp)
-                ) {
-                    // Local Tab Button
-                    Box(
-                        modifier = Modifier
-                            .weight(1f)
-                            .clip(RoundedCornerShape(8.dp))
-                            .background(
-                                if (!isGlobalSelected) {
-                                    if (isArtistic) Color(0xFF6750A4) else Color.White.copy(alpha = 0.12f)
-                                } else Color.Transparent
-                            )
-                            .clickable { isGlobalSelected = false }
-                            .padding(vertical = 10.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = "LOCAL LEADERBOARD",
-                            color = if (!isGlobalSelected) Color.White else textSubColor,
-                            fontSize = 10.sp,
-                            fontWeight = FontWeight.Bold,
-                            fontFamily = FontFamily.Monospace
-                        )
-                    }
-
-                    // Global Tab Button
-                    Box(
-                        modifier = Modifier
-                            .weight(1f)
-                            .clip(RoundedCornerShape(8.dp))
-                            .background(
-                                if (isGlobalSelected) {
-                                    if (isArtistic) Color(0xFF6750A4) else Color.White.copy(alpha = 0.12f)
-                                } else Color.Transparent
-                            )
-                            .clickable { isGlobalSelected = true }
-                            .padding(vertical = 10.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(
-                                imageVector = Icons.Default.Cloud,
-                                contentDescription = null,
-                                tint = if (isGlobalSelected) Color(0xFFFFD700) else textSubColor,
-                                modifier = Modifier.size(13.dp)
-                            )
-                            Spacer(modifier = Modifier.width(6.dp))
-                            Text(
-                                text = "GLOBAL SYNC",
-                                color = if (isGlobalSelected) Color.White else textSubColor,
-                                fontSize = 10.sp,
-                                fontWeight = FontWeight.Bold,
-                                fontFamily = FontFamily.Monospace
-                            )
-                        }
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(12.dp))
-
-                // Determine active list & status view
-                val activeScores = if (isGlobalSelected) onlineScores else scores
-
-                if (isGlobalSelected && isFirebaseConfigured) {
+                if (isFirebaseConfigured) {
                     // Show firestore dynamic synchronization connection header
                     Row(
                         modifier = Modifier
@@ -1514,10 +1430,10 @@ fun LeaderboardOverlay(
                             }
                         }
                     }
-                    Spacer(modifier = Modifier.height(6.dp))
+                    Spacer(modifier = Modifier.height(8.dp))
                 }
 
-                if (isGlobalSelected && !isFirebaseConfigured) {
+                if (!isFirebaseConfigured) {
                     // GORGEOUS educational instruction board on how to configure Cloud Storage
                     Box(
                         modifier = Modifier
@@ -1604,7 +1520,7 @@ fun LeaderboardOverlay(
 
                     Spacer(modifier = Modifier.height(6.dp))
 
-                    if (activeScores.isEmpty()) {
+                    if (onlineScores.isEmpty()) {
                         Box(
                             modifier = Modifier
                                 .weight(1f)
@@ -1620,7 +1536,7 @@ fun LeaderboardOverlay(
                                 )
                                 Spacer(modifier = Modifier.height(12.dp))
                                 Text(
-                                    text = if (isGlobalSelected) "NO GLOBAL SCORES YET" else "NO HIGHSCORES RECORDED",
+                                    text = "NO GLOBAL SCORES YET",
                                     color = textSubColor,
                                     fontSize = 13.sp,
                                     fontWeight = FontWeight.Bold,
@@ -1628,7 +1544,7 @@ fun LeaderboardOverlay(
                                     textAlign = TextAlign.Center
                                 )
                                 Text(
-                                    text = if (isGlobalSelected) "Be the first to upload an online record!" else "Take flight and set your first record!",
+                                    text = "Be the first to upload an online record!",
                                     color = textSubColor.copy(alpha = 0.7f),
                                     fontSize = 11.sp,
                                     fontFamily = FontFamily.Monospace,
@@ -1643,7 +1559,7 @@ fun LeaderboardOverlay(
                                 .fillMaxWidth(),
                             verticalArrangement = Arrangement.spacedBy(4.dp)
                         ) {
-                            itemsIndexed(activeScores) { rank, row ->
+                            itemsIndexed(onlineScores) { rank, row ->
                                 val colorIndex = when (rank) {
                                     0 -> if (isArtistic) Color(0xFF21005D) else Color(0xFFFFD700) // First rank highlight
                                     1 -> if (isArtistic) Color(0xFF6750A4) else Color(0xFFC0C0C0)
@@ -1717,10 +1633,10 @@ fun LeaderboardOverlay(
 
                 // Footer banner stats
                 Text(
-                    text = if (isGlobalSelected && isFirebaseConfigured) 
+                    text = if (isFirebaseConfigured) 
                         "Scores are synchronized remotely with Firebase Datastore."
                     else
-                        "Highscores are securely preserved locally via SQLite.",
+                        "Offline mode. Add Firebase credentials to connect.",
                     textAlign = TextAlign.Center,
                     fontSize = 10.sp,
                     color = textSubColor,
@@ -1728,29 +1644,5 @@ fun LeaderboardOverlay(
                 )
             }
         }
-    }
-
-    // Erase verification dialog
-    if (confirmClearDialog) {
-        AlertDialog(
-            onDismissRequest = { confirmClearDialog = false },
-            title = { Text("Erase Scores?") },
-            text = { Text("Are you absolutely sure you want to permanently delete all local high scores? This action is irreversible.") },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        onClearAll()
-                        confirmClearDialog = false
-                    }
-                ) {
-                    Text("ERASE ALL", color = Color.Red, fontWeight = FontWeight.Bold)
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { confirmClearDialog = false }) {
-                    Text("CANCEL", color = Color.Gray)
-                }
-            }
-        )
     }
 }
